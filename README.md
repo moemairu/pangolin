@@ -39,7 +39,7 @@ This project is separated into `sender` and `receiver` directories to simulate a
 ### 1. Receiver: Generate Keys
 The receiver generates a post-quantum key pair and sends the public key to the sender.
 ```bash
-python receiver/tools/keygen.py
+python receiver/keygen.py
 # Generates: receiver/keys/public.bin and receiver/keys/secret.bin
 ```
 
@@ -47,8 +47,8 @@ python receiver/tools/keygen.py
 The sender uses the receiver's public key to encrypt a file.
 ```bash
 # Assuming the receiver's public.bin was copied to sender/public_keys/
-python sender/tools/encrypt.py \
-    --file "document.pdf" \
+python sender/encrypt.py \
+    --file "sender/data/Pride and Prejudice (1813).pdf" \
     --pubkey "sender/public_keys/public.bin"
 # Generates: .enc, .kem, and .meta.json files in sender/data/encrypted/
 ```
@@ -57,10 +57,10 @@ python sender/tools/encrypt.py \
 The receiver takes the encrypted files sent by the sender and decrypts them using their secret key.
 ```bash
 # Assuming the encrypted files were copied to receiver/data/received/
-python receiver/tools/decrypt.py \
-    --enc-file "receiver/data/received/document.pdf.enc" \
+python receiver/decrypt.py \
+    --enc-file "receiver/data/received/Pride and Prejudice (1813).pdf.enc" \
     --seckey "receiver/keys/secret.bin"
-# Generates: decrypted_document.pdf in receiver/data/decrypted/
+# Generates: decrypted file in receiver/data/decrypted/
 ```
 ## How It Works
 
