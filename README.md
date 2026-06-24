@@ -33,28 +33,34 @@ cmake -GNinja .. && ninja && sudo ninja install
 pip install -r requirements.txt
 ```
 ## Usage
-### Run Demo (with generated sample file)
+
+This project is separated into `sender` and `receiver` directories to simulate a real-world file transfer between two distinct parties.
+
+### 1. Receiver: Generate Keys
+The receiver generates a post-quantum key pair and sends the public key to the sender.
 ```bash
-python main.py
+python receiver/tools/keygen.py
+# Generates: receiver/keys/public.bin and receiver/keys/secret.bin
 ```
-### Encrypt a Specific File
+
+### 2. Sender: Encrypt File
+The sender uses the receiver's public key to encrypt a file.
 ```bash
-python main.py --file path/to/document.pdf
+# Assuming the receiver's public.bin was copied to sender/public_keys/
+python sender/tools/encrypt.py \
+    --file "document.pdf" \
+    --pubkey "sender/public_keys/public.bin"
+# Generates: .enc, .kem, and .meta.json files in sender/data/encrypted/
 ```
-### Run Performance Benchmarks
+
+### 3. Receiver: Decrypt File
+The receiver takes the encrypted files sent by the sender and decrypts them using their secret key.
 ```bash
-python main.py --benchmark
-```
-### Both Demo and Benchmarks
-```bash
-python main.py --file document.pdf --benchmark
-```
-### Options
-```
---file, -f          Path to file to encrypt and transfer
---benchmark, -b     Run performance benchmarks
---sample-size       Size of generated sample file in bytes (default: 102400)
---log-level         Logging level: DEBUG, INFO, WARNING, ERROR (default: INFO)
+# Assuming the encrypted files were copied to receiver/data/received/
+python receiver/tools/decrypt.py \
+    --enc-file "receiver/data/received/document.pdf.enc" \
+    --seckey "receiver/keys/secret.bin"
+# Generates: decrypted_document.pdf in receiver/data/decrypted/
 ```
 ## How It Works
 
@@ -161,23 +167,30 @@ The application is modularized into several key components:
 
 ```text
 pangolin/
-├── pangolin/               # Core package
-│   ├── __init__.py         # Package metadata
-│   ├── kyber.py            # Kyber768 KEM wrapper
-│   ├── aes.py              # AES-256-GCM encrypt/decrypt
-│   ├── integrity.py        # SHA-256 hashing & verification
-│   ├── transfer.py         # Simulated file transfer
-│   ├── benchmark.py        # Performance measurement
-│   ├── metadata.py         # JSON metadata management
-│   └── logger.py           # Logging configuration
-├── main.py                 # CLI entry point
-├── requirements.txt        # Python dependencies
-├── data/
-│   ├── sender/             # Input files (plaintext)
-│   ├── encrypted/          # Encrypted output + metadata
-│   └── receiver/           # Received & decrypted files
-└── README.md               # This file
+├── pangolin/               # Shared core cryptography library
+│   ├── __init__.py
+│   ├── kyber.py
+│   ├── aes.py
+│   ├── integrity.py
+│   ├── metadata.py
+│   ├── logger.py
+│   └── benchmark.py
+│
+├── receiver/               # RECEIVER'S WORKSPACE
+│   ├── tools/
+│   │   ├── keygen.py       # Generates Kyber768 keys
+│   │   └── decrypt.py      # Decrypts received packages
+│   ├── keys/               # Stores private & public keys
+│   └── data/               # Stores received & decrypted files
+│
+├── sender/                 # SENDER'S WORKSPACE
+│   ├── tools/
+│   │   └── encrypt.py      # Encrypts files using receiver's public key
+│   ├── public_keys/        # Stores public keys received from others
+│   └── data/               # Stores files to send & encrypted packages
+└── README.md
 ```
+
 ## Dependencies
 | Package | Version | Purpose |
 |---------|---------|---------|
