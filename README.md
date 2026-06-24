@@ -34,33 +34,83 @@ Pangolin simulates a real-world two-party file transfer where sender and receive
 ## 🛠️ Installation
 
 ### Prerequisites
+
 - **Python 3.11+**
 - **CMake**, **Ninja**, **GCC/Clang**, **OpenSSL headers** (for building `liboqs`)
 
 ### 1. Build liboqs (Native C Library)
 
 **🐧 Ubuntu / Debian:**
+
 ```bash
+sudo apt update
 sudo apt install -y cmake gcc ninja-build libssl-dev
+
 git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
-cd liboqs && mkdir build && cd build
-cmake -GNinja .. && ninja && sudo ninja install && sudo ldconfig
+cd liboqs
+mkdir build && cd build
+cmake -GNinja ..
+ninja
+sudo ninja install
+sudo ldconfig
+```
+
+**🐧 Arch Linux:**
+
+```bash
+sudo pacman -S cmake gcc ninja openssl
+
+git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
+cd liboqs
+mkdir build && cd build
+cmake -GNinja ..
+ninja
+sudo ninja install
+```
+
+**🐧 Fedora / RHEL:**
+
+```bash
+sudo dnf install cmake gcc ninja-build openssl-devel
+
+git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
+cd liboqs
+mkdir build && cd build
+cmake -GNinja ..
+ninja
+sudo ninja install
 ```
 
 **🍎 macOS:**
+
 ```bash
 brew install cmake ninja openssl
+
 git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
-cd liboqs && mkdir build && cd build
+cd liboqs
+mkdir build && cd build
 cmake -GNinja -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) ..
-ninja && sudo ninja install
+ninja
+sudo ninja install
 ```
 
 ### 2. Install Python Dependencies
 
+You can use standard `pip` inside a virtual environment, or system-level packages depending on your setup.
+
+**Option A: Virtual Environment (Any OS)**
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+**Option B: System Packages (e.g., Arch Linux via AUR)**
+
+```bash
+sudo pacman -S python-cryptography python-psutil
+yay -S python-liboqs
 ```
 
 ---
