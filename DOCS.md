@@ -1,29 +1,21 @@
-# Pangolin — Technical Documentation
+<div align="center">
+  
+# 📘 Pangolin — Technical Documentation
 
-Full technical reference for the Pangolin post-quantum secure file transfer proof-of-concept.
+**Full technical reference for the Pangolin post-quantum secure file transfer proof-of-concept.**
 
----
+*A deep dive into the cryptographic architecture, mathematical foundations, and security implications of hybrid post-quantum systems.*
 
-## Table of Contents
-
-- [Why Post-Quantum?](#why-post-quantum)
-- [Cryptographic Stack](#cryptographic-stack)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Usage Reference](#usage-reference)
-- [How It Works](#how-it-works)
-- [Module Reference](#module-reference)
-- [Benchmarking](#benchmarking)
-- [Security Notes](#security-notes)
-- [Dependencies](#dependencies)
+[Why Post-Quantum?](#-why-post-quantum) • [Cryptographic Stack](#%EF%B8%8F-cryptographic-stack) • [Architecture](#%EF%B8%8F-architecture) • [Usage](#-usage-reference) • [Formats](#-how-it-works) • [Benchmarking](#%EF%B8%8F-benchmarking)
+</div>
 
 ---
 
-## Why Post-Quantum?
+## 🎓 Why Post-Quantum?
 
 Classical public-key cryptography (RSA, ECDH) derives its security from problems like integer factorization and discrete logarithms. A sufficiently powerful quantum computer running **Shor's Algorithm** can solve both in polynomial time.
 
-```
+```text
 RSA-2048   ──►  Broken by Shor's Algorithm
 ECDH P-256 ──►  Broken by Shor's Algorithm
 
@@ -32,74 +24,84 @@ Kyber768   ──►  Based on Module-LWE — no known quantum speedup
 
 **CRYSTALS-Kyber768** is grounded in the **Module Learning With Errors (Module-LWE)** problem. In 2024, NIST standardized it as **FIPS 203 (ML-KEM)** — the first post-quantum KEM to receive full federal standardization.
 
-> **"Store Now, Decrypt Later"** — adversaries are harvesting encrypted traffic today to decrypt once quantum hardware matures. Post-quantum migration must start now.
+> ⚠️ **"Store Now, Decrypt Later"** 
+> Adversaries are harvesting encrypted traffic today to decrypt once quantum hardware matures. Post-quantum migration must start now.
 
 ---
 
-## Cryptographic Stack
+## 📐 Mathematical Concepts
+
+This project serves as an interactive proof-of-concept for core concepts in **Post-Quantum Cryptography** and **Information Security**:
+
+| Concept | Demonstration |
+| :--- | :--- |
+| **Module-LWE** | The underlying hardness assumption of Kyber, based on the difficulty of solving systems of linear equations over rings with added noise. |
+| **Key Encapsulation** | Asymmetric generation of a symmetric shared secret without ever transmitting the secret itself across the wire. |
+| **Galois/Counter Mode** | Authenticated encryption that mathematically guarantees both message confidentiality and integrity in a single pass. |
+| **Hash Functions** | One-way cryptographic algorithms (SHA-256) used here as a tamper-evident seal for the plaintext data. |
+| **Hybrid Cryptography** | The protocol pattern of using computationally expensive asymmetric math (Kyber) only for key exchange, and fast symmetric math (AES) for bulk data. |
+
+---
+
+## 🛡️ Cryptographic Stack
 
 Pangolin uses a **hybrid encryption** model: the post-quantum KEM establishes a shared secret; AES uses that secret for bulk encryption. This mirrors the pattern of TLS 1.3.
 
 ### CRYSTALS-Kyber768
 
 | Parameter | Value |
-|---|---|
-| Type | Key Encapsulation Mechanism (KEM) |
-| Standard | FIPS 203 (ML-KEM) — NIST PQC winner |
-| Security basis | Module Learning With Errors (Module-LWE) |
-| Security level | NIST Level 3 (~AES-192 classical equivalent) |
-| Public key size | 1,184 bytes |
-| Secret key size | 2,400 bytes |
-| KEM ciphertext size | 1,088 bytes |
-| Shared secret size | 32 bytes |
+| :--- | :--- |
+| **Type** | Key Encapsulation Mechanism (KEM) |
+| **Standard** | FIPS 203 (ML-KEM) — NIST PQC winner |
+| **Security basis** | Module Learning With Errors (Module-LWE) |
+| **Security level** | NIST Level 3 (~AES-192 classical equivalent) |
+| **Public key size** | 1,184 bytes |
+| **Secret key size** | 2,400 bytes |
+| **KEM ciphertext**| 1,088 bytes |
+| **Shared secret** | 32 bytes |
 
 ### AES-256-GCM
 
 | Parameter | Value |
-|---|---|
-| Key size | 256 bits (32 bytes) |
-| Nonce size | 96 bits (12 bytes) — NIST recommended |
-| Tag size | 128 bits (16 bytes) |
-| Mode | Galois/Counter Mode — authenticated encryption (AEAD) |
+| :--- | :--- |
+| **Key size** | 256 bits (32 bytes) |
+| **Nonce size** | 96 bits (12 bytes) — NIST recommended |
+| **Tag size** | 128 bits (16 bytes) |
+| **Mode** | Galois/Counter Mode — authenticated encryption (AEAD) |
 
 GCM provides both **confidentiality** and **integrity** in one pass. Any modification to the ciphertext — even a single bit — causes tag verification to fail before decryption.
 
 ### SHA-256
 
 | Parameter | Value |
-|---|---|
-| Digest size | 256 bits — 64-character hex string |
-| File hashing | Streaming, 64 KB chunks (supports arbitrarily large files) |
-| Usage | Hash computed pre-encryption, embedded in metadata, verified post-decryption |
-
-### Why Both KEM + AES?
-
-KEM algorithms are **not** bulk ciphers. They solely establish a shared secret. AES then encrypts the actual data with that secret. This is the same model as TLS 1.3.
-
-```
-Kyber768 KEM
-  + Receiver's Public Key
-  ──────────────────────►  Shared Secret (32 B)  ──►  AES-256 Key  ──►  Encrypt File
-```
+| :--- | :--- |
+| **Digest size** | 256 bits — 64-character hex string |
+| **File hashing**| Streaming, 64 KB chunks (supports arbitrarily large files) |
+| **Usage** | Hash computed pre-encryption, embedded in metadata, verified post-decryption |
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ### High-Level Workflow
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
 flowchart TD
-    subgraph S ["Sender"]
+    subgraph S ["📤 Sender"]
         SF[("Plaintext File")]
         SH["Compute SHA-256"]
-        SE["Kyber Encapsulate\npublic_key → (kem_ct, secret)"]
-        SD["Derive AES-256 Key\nsecret[:32]"]
+        SE["Kyber Encapsulate
+public_key → (kem_ct, secret)"]
+        SD["Derive AES-256 Key
+secret[:32]"]
         SG["AES-256-GCM Encrypt"]
-        SO1[(".enc file\nnonce ‖ tag ‖ ciphertext")]
-        SO2[(".kem file\nKEM ciphertext")]
-        SO3[(".meta.json\nhash + metadata")]
+        SO1[(".enc file
+nonce ‖ tag ‖ ciphertext")]
+        SO2[(".kem file
+KEM ciphertext")]
+        SO3[(".meta.json
+hash + metadata")]
 
         SF --> SH
         SF --> SG
@@ -110,16 +112,21 @@ flowchart TD
         SH --> SO3
     end
 
-    subgraph R ["Receiver"]
+    subgraph R ["🔐 Receiver"]
         RK["Kyber Keypair Gen"]
-        RPK(["public.bin\n1,184 bytes"])
-        RSK(["secret.bin\n2,400 bytes"])
-        RD["Kyber Decapsulate\nsecret_key + kem_ct → secret"]
-        RA["Derive AES-256 Key\nsecret[:32]"]
+        RPK(["public.bin
+1,184 bytes"])
+        RSK(["secret.bin
+2,400 bytes"])
+        RD["Kyber Decapsulate
+secret_key + kem_ct → secret"]
+        RA["Derive AES-256 Key
+secret[:32]"]
         RG["AES-256-GCM Decrypt"]
         RF[("Decrypted File")]
         RH["Compute SHA-256"]
-        RV{"Verify vs\nmetadata hash"}
+        RV{"Verify vs
+metadata hash"}
 
         RK --> RPK
         RK --> RSK
@@ -131,10 +138,10 @@ flowchart TD
         RH --> RV
     end
 
-    RPK -. "1  share public key" .-> SE
-    SO2 -. "2  transfer" .-> RD
-    SO1 -. "2  transfer" .-> RG
-    SO3 -. "2  transfer" .-> RV
+    RPK -. "① share public key" .-> SE
+    SO2 -. "② transfer" .-> RD
+    SO1 -. "② transfer" .-> RG
+    SO3 -. "② transfer" .-> RV
 ```
 
 ### Cryptographic Sequence
@@ -174,101 +181,52 @@ sequenceDiagram
 
 ---
 
-## Installation
-
-### Build liboqs (native C library)
-
-**Ubuntu / Debian:**
-```bash
-sudo apt install -y cmake gcc ninja-build libssl-dev
-git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
-cd liboqs && mkdir build && cd build
-cmake -GNinja .. && ninja && sudo ninja install && sudo ldconfig
-```
-
-**macOS (Homebrew):**
-```bash
-brew install cmake ninja openssl
-git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git
-cd liboqs && mkdir build && cd build
-cmake -GNinja -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) ..
-ninja && sudo ninja install
-```
-
-**Verify:**
-```bash
-ls /usr/local/lib | grep oqs
-```
-
-### Python dependencies
-
-```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-```
-
----
-
-## Usage Reference
+## 📖 Usage Reference
 
 ### `receiver/keygen.py`
 
 Generates a Kyber768 keypair.
 
-```
+```bash
 python receiver/keygen.py [--out-dir DIR]
-
-  --out-dir DIR   Key output directory (default: keys/)
 ```
 
 | Output file | Size | Notes |
-|---|---|---|
+| :--- | :--- | :--- |
 | `keys/public.bin` | 1,184 bytes | Share with sender |
 | `keys/secret.bin` | 2,400 bytes | Never share — keep locally |
-
----
 
 ### `sender/encrypt.py`
 
 Encrypts a file using the receiver's public key.
 
-```
+```bash
 python sender/encrypt.py --file FILE --pubkey PUBKEY [--out-dir DIR]
-
-  --file FILE       Path to plaintext file to encrypt  (required)
-  --pubkey PUBKEY   Path to receiver's public.bin       (required)
-  --out-dir DIR     Output directory (default: data/encrypted/)
 ```
 
 | Output file | Description |
-|---|---|
+| :--- | :--- |
 | `<name>.enc` | Encrypted payload: `nonce(12B) ‖ tag(16B) ‖ ciphertext(NB)` |
 | `<name>.kem` | Kyber KEM ciphertext (1,088 bytes) |
 | `<name>.meta.json` | Metadata: original hash, algorithm, timestamps |
-
----
 
 ### `receiver/decrypt.py`
 
 Decrypts a received package and verifies file integrity.
 
-```
+```bash
 python receiver/decrypt.py --enc-file FILE --seckey KEY [--out-dir DIR]
-
-  --enc-file FILE   Path to .enc file  (required)
-  --seckey KEY      Path to secret.bin (required)
-  --out-dir DIR     Output directory (default: data/decrypted/)
 ```
 
-> The `.kem` and `.meta.json` files are inferred automatically from the `.enc` path. All three must be in the same directory.
+> 💡 **Note**: The `.kem` and `.meta.json` files are inferred automatically from the `.enc` path. All three must be in the same directory.
 
 ---
 
-## How It Works
+## 🔍 How It Works
 
-### `.enc` Binary Format
+### The `.enc` Binary Format
 
-```
+```text
 Offset    Size      Field
 ──────────────────────────────────────────────────────
 0         12 bytes  AES-GCM nonce (random, per-file)
@@ -276,7 +234,7 @@ Offset    Size      Field
 28        N bytes   Ciphertext (same length as plaintext)
 ```
 
-### `.meta.json` Format
+### The `.meta.json` Format
 
 ```json
 {
@@ -302,74 +260,35 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
     return shared_secret[:32]
 ```
 
-> In production, apply HKDF-SHA256 for domain separation and key hygiene.
+> **In production:** Apply HKDF-SHA256 for domain separation and key hygiene.
 
 ---
 
-## Module Reference
+## 📦 Module Reference
 
 ### `core/kyber.py` — Kyber768 KEM
-
-Wraps `liboqs-python`. All functions log timing via `time.perf_counter()`.
-
 | Function | Returns | Description |
-|---|---|---|
+| :--- | :--- | :--- |
 | `generate_keypair()` | `(bytes, bytes)` | Generate keypair: `(public_key, secret_key)` |
 | `encapsulate(public_key)` | `(bytes, bytes)` | Returns `(kem_ciphertext, shared_secret)` |
 | `decapsulate(secret_key, ciphertext)` | `bytes` | Recover `shared_secret` from KEM ciphertext |
 
 ### `core/aes.py` — AES-256-GCM
-
-Uses `cryptography.hazmat.primitives.ciphers.aead.AESGCM`.
-
 | Function | Returns | Description |
-|---|---|---|
+| :--- | :--- | :--- |
 | `derive_aes_key(shared_secret)` | `bytes` | First 32 bytes of shared secret |
 | `encrypt_file(filepath, key)` | `(nonce, ciphertext, tag)` | Reads file, encrypts, returns components |
 | `decrypt_file(nonce, ciphertext, tag, key)` | `bytes` | Verifies tag, returns plaintext. Raises `InvalidTag` on failure |
 
 ### `core/integrity.py` — SHA-256
-
 | Function | Returns | Description |
-|---|---|---|
+| :--- | :--- | :--- |
 | `compute_hash(filepath)` | `str` | Streaming SHA-256 of a file (64 KB chunks) |
-| `compute_hash_bytes(data)` | `str` | SHA-256 of bytes in memory |
 | `verify_hash(filepath, expected)` | `bool` | Hash file and compare |
-| `verify_hash_bytes(data, expected)` | `bool` | Hash bytes and compare |
-
-### `core/metadata.py` — JSON Metadata
-
-| Function | Returns | Description |
-|---|---|---|
-| `create_metadata(filename, filesize, algorithm, original_hash, extra)` | `dict` | Build metadata with UTC timestamp |
-| `save_metadata(metadata, filepath)` | `None` | Write pretty-printed JSON |
-| `load_metadata(filepath)` | `dict` | Read and parse JSON metadata |
-
-### `core/logger.py` — Logging
-
-Dual-output: console + file.
-
-```python
-from core.logger import setup_logger, get_logger
-
-logger = setup_logger("sender", log_file="sender.log")  # call once at entry point
-logger = get_logger()                                    # use in any submodule
-```
-
-### `core/benchmark.py` — Performance Suite
-
-| Function | Description |
-|---|---|
-| `measure(name, func, *args, file_size)` | Wrap any function with timing + CPU/RAM capture. Returns `(result, BenchmarkResult)` |
-| `run_full_benchmark(file_sizes, iterations)` | Run complete encrypt/decrypt cycle across file sizes. Returns averaged results |
-| `print_summary(results)` | Print formatted benchmark table to stdout |
-| `save_results(results, filepath)` | Export results to JSON |
-
-`BenchmarkResult` fields: `operation`, `duration_ms`, `cpu_percent`, `ram_mb`, `file_size_bytes`.
 
 ---
 
-## Benchmarking
+## ⏱️ Benchmarking
 
 ```bash
 python -c "
@@ -381,24 +300,12 @@ results = run_full_benchmark(
     iterations=5
 )
 print_summary(results)
-save_results(results, 'benchmark_results.json')
 "
 ```
 
-Operations benchmarked per iteration:
+**Sample output:**
 
-| # | Operation |
-|---|---|
-| 1 | Kyber768 key generation |
-| 2 | KEM encapsulation |
-| 3 | AES-256-GCM encryption |
-| 4 | SHA-256 hash computation |
-| 5 | KEM decapsulation |
-| 6 | AES-256-GCM decryption |
-
-Sample output:
-
-```
+```text
 ================================================================================
 BENCHMARK SUMMARY
 ================================================================================
@@ -418,19 +325,17 @@ File Size    Operation            Avg (ms)   Min (ms)   Max (ms)   CPU %  RAM MB
 ================================================================================
 ```
 
-KEM operations are near constant-time regardless of file size. AES and SHA-256 scale linearly.
-
 ---
 
-## Security Notes
+## 🔒 Security Notes
 
-> [!IMPORTANT]
+> ⚠️ **IMPORTANT**
 > This is a proof-of-concept. The following simplifications exist by design and must be resolved before any production deployment.
 
 ### Simplifications vs. Production
 
 | Simplification | Production Recommendation |
-|---|---|
+| :--- | :--- |
 | AES key = raw Kyber shared secret | Apply HKDF-SHA256 with context/domain label |
 | File fully loaded into memory | Streaming GCM encryption with chunked processing |
 | Transfer via file copy | Secure transport layer (TLS 1.3 with PQ KEM) |
@@ -441,19 +346,14 @@ KEM operations are near constant-time regardless of file size. AES and SHA-256 s
 
 ### What Is Correctly Implemented
 
-- ✅ Quantum-resistant key exchange — Kyber768 is NIST FIPS 203 standardized
-- ✅ Authenticated encryption — AES-256-GCM detects any ciphertext tampering
-- ✅ End-to-end integrity — SHA-256 verified post-decryption catches corruption
-- ✅ Nonce uniqueness — `os.urandom(12)` per encryption operation
-- ✅ Secret key isolation — secret key never leaves the receiver's workspace
+- ✅ **Quantum-resistant key exchange** — Kyber768 is NIST FIPS 203 standardized
+- ✅ **Authenticated encryption** — AES-256-GCM detects any ciphertext tampering
+- ✅ **End-to-end integrity** — SHA-256 verified post-decryption catches corruption
+- ✅ **Nonce uniqueness** — `os.urandom(12)` per encryption operation
+- ✅ **Secret key isolation** — secret key never leaves the receiver's workspace
 
 ---
 
-## Dependencies
-
-| Package | Purpose |
-|---|---|
-| [`cryptography`](https://cryptography.io/) | AES-256-GCM authenticated encryption |
-| [`liboqs-python`](https://github.com/open-quantum-safe/liboqs-python) | Kyber768 KEM Python bindings |
-| [`psutil`](https://psutil.readthedocs.io/) | CPU/RAM monitoring (benchmark module only) |
-| [`liboqs`](https://github.com/open-quantum-safe/liboqs) *(native)* | C implementation of post-quantum algorithms |
+<div align="center">
+  <i>Open-source and built for educational purposes.</i>
+</div>
