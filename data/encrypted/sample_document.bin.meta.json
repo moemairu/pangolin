@@ -1,0 +1,12 @@
+{
+  "filename": "sample_document.bin",
+  "filesize": 102400,
+  "algorithm": "Kyber768 + AES-256-GCM",
+  "original_hash": "7e27531b00a21950503ae16ad46e3790fd2fefad527934ea3a71089b01c9568b",
+  "timestamp": "2026-06-24T08:59:51.215765+00:00",
+  "version": "1.0",
+  "nonce_size": 12,
+  "tag_size": 16,
+  "ciphertext_size": 102400,
+  "kem_ciphertext_size": 1088
+}

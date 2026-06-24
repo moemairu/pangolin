@@ -1,0 +1,198 @@
+[
+  {
+    "file_size_bytes": 1024,
+    "file_size_label": "1 KB",
+    "iterations": 5,
+    "operations": {
+      "key_generation": {
+        "avg_duration_ms": 0.5,
+        "min_duration_ms": 0.256,
+        "max_duration_ms": 1.365,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 35.53
+      },
+      "encapsulation": {
+        "avg_duration_ms": 0.331,
+        "min_duration_ms": 0.261,
+        "max_duration_ms": 0.551,
+        "avg_cpu_percent": 589.0,
+        "avg_ram_mb": 35.53
+      },
+      "encryption": {
+        "avg_duration_ms": 0.374,
+        "min_duration_ms": 0.259,
+        "max_duration_ms": 0.776,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 35.66
+      },
+      "hash_computation": {
+        "avg_duration_ms": 0.187,
+        "min_duration_ms": 0.172,
+        "max_duration_ms": 0.213,
+        "avg_cpu_percent": 742.1,
+        "avg_ram_mb": 35.66
+      },
+      "decapsulation": {
+        "avg_duration_ms": 0.311,
+        "min_duration_ms": 0.251,
+        "max_duration_ms": 0.464,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 35.66
+      },
+      "decryption": {
+        "avg_duration_ms": 0.278,
+        "min_duration_ms": 0.179,
+        "max_duration_ms": 0.571,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 35.69
+      }
+    }
+  },
+  {
+    "file_size_bytes": 102400,
+    "file_size_label": "100 KB",
+    "iterations": 5,
+    "operations": {
+      "key_generation": {
+        "avg_duration_ms": 0.264,
+        "min_duration_ms": 0.248,
+        "max_duration_ms": 0.293,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 36.08
+      },
+      "encapsulation": {
+        "avg_duration_ms": 0.266,
+        "min_duration_ms": 0.252,
+        "max_duration_ms": 0.277,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 36.08
+      },
+      "encryption": {
+        "avg_duration_ms": 0.419,
+        "min_duration_ms": 0.312,
+        "max_duration_ms": 0.537,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 36.18
+      },
+      "hash_computation": {
+        "avg_duration_ms": 0.334,
+        "min_duration_ms": 0.325,
+        "max_duration_ms": 0.353,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 36.18
+      },
+      "decapsulation": {
+        "avg_duration_ms": 0.253,
+        "min_duration_ms": 0.243,
+        "max_duration_ms": 0.261,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 36.18
+      },
+      "decryption": {
+        "avg_duration_ms": 0.232,
+        "min_duration_ms": 0.227,
+        "max_duration_ms": 0.246,
+        "avg_cpu_percent": 647.9,
+        "avg_ram_mb": 36.18
+      }
+    }
+  },
+  {
+    "file_size_bytes": 1048576,
+    "file_size_label": "1 MB",
+    "iterations": 5,
+    "operations": {
+      "key_generation": {
+        "avg_duration_ms": 0.34,
+        "min_duration_ms": 0.306,
+        "max_duration_ms": 0.363,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 40.19
+      },
+      "encapsulation": {
+        "avg_duration_ms": 0.297,
+        "min_duration_ms": 0.198,
+        "max_duration_ms": 0.37,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 40.19
+      },
+      "encryption": {
+        "avg_duration_ms": 1.975,
+        "min_duration_ms": 0.725,
+        "max_duration_ms": 3.671,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 41.19
+      },
+      "hash_computation": {
+        "avg_duration_ms": 1.664,
+        "min_duration_ms": 1.137,
+        "max_duration_ms": 1.877,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 40.54
+      },
+      "decapsulation": {
+        "avg_duration_ms": 0.298,
+        "min_duration_ms": 0.199,
+        "max_duration_ms": 0.442,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 40.54
+      },
+      "decryption": {
+        "avg_duration_ms": 0.912,
+        "min_duration_ms": 0.37,
+        "max_duration_ms": 2.048,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 41.05
+      }
+    }
+  },
+  {
+    "file_size_bytes": 10485760,
+    "file_size_label": "10 MB",
+    "iterations": 5,
+    "operations": {
+      "key_generation": {
+        "avg_duration_ms": 0.455,
+        "min_duration_ms": 0.378,
+        "max_duration_ms": 0.481,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 79.82
+      },
+      "encapsulation": {
+        "avg_duration_ms": 0.388,
+        "min_duration_ms": 0.286,
+        "max_duration_ms": 0.452,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 79.82
+      },
+      "encryption": {
+        "avg_duration_ms": 10.071,
+        "min_duration_ms": 8.315,
+        "max_duration_ms": 12.558,
+        "avg_cpu_percent": 91.8,
+        "avg_ram_mb": 89.82
+      },
+      "hash_computation": {
+        "avg_duration_ms": 15.388,
+        "min_duration_ms": 15.127,
+        "max_duration_ms": 15.539,
+        "avg_cpu_percent": 90.5,
+        "avg_ram_mb": 83.44
+      },
+      "decapsulation": {
+        "avg_duration_ms": 0.403,
+        "min_duration_ms": 0.351,
+        "max_duration_ms": 0.464,
+        "avg_cpu_percent": 0.0,
+        "avg_ram_mb": 83.44
+      },
+      "decryption": {
+        "avg_duration_ms": 5.828,
+        "min_duration_ms": 4.362,
+        "max_duration_ms": 7.651,
+        "avg_cpu_percent": 174.6,
+        "avg_ram_mb": 88.82
+      }
+    }
+  }
+]
