@@ -60,41 +60,88 @@ python main.py --file document.pdf --benchmark
 
 The secure file transfer process is divided into sender and receiver roles. The system utilizes a hybrid cryptographic approach, combining the post-quantum security of Kyber768 with the high performance of AES-256-GCM.
 
-### Cryptographic Flow
+### High-Level Work Flow
+
+The diagram below illustrates how data and cryptographic keys move through the system, from the initial file to the verified decryption.
+
+```mermaid
+flowchart TD
+    classDef crypto fill:#e1bee7,stroke:#8e24aa,stroke-width:2px;
+    classDef process fill:#bbdefb,stroke:#1e88e5,stroke-width:2px;
+    classDef data fill:#c8e6c9,stroke:#43a047,stroke-width:2px;
+    classDef transfer fill:#ffe0b2,stroke:#fb8c00,stroke-width:3px,stroke-dasharray: 5 5;
+
+    subgraph Sender [Sender Role]
+        direction TB
+        S_File[(Plaintext File)]:::data --> S_Hash[Compute SHA-256 Hash]:::process
+        S_Encap[Kyber Encapsulation]:::crypto --> S_SharedKey((Shared Secret)):::crypto
+        S_Encap --> S_KemCT((KEM Ciphertext)):::crypto
+        S_SharedKey --> S_AES[Derive AES-256 Key]:::process
+        S_File --> S_Encrypt[AES-256-GCM Encryption]:::crypto
+        S_AES --> S_Encrypt
+        S_Encrypt --> S_EncFile[(Encrypted File)]:::data
+        S_Hash --> S_Meta[(Metadata JSON)]:::data
+    end
+
+    subgraph Receiver [Receiver Role]
+        direction TB
+        R_Keys[Kyber Keypair Gen]:::crypto --> R_PubKey((Public Key)):::crypto
+        R_Keys --> R_PrivKey((Secret Key)):::crypto
+        R_PrivKey --> R_Decap[Kyber Decapsulation]:::crypto
+        R_Decap --> R_SharedKey((Shared Secret)):::crypto
+        R_SharedKey --> R_AES[Derive AES-256 Key]:::process
+        R_AES --> R_Decrypt[AES-256-GCM Decryption]:::crypto
+        R_Decrypt --> R_File[(Decrypted File)]:::data
+        R_File --> R_Hash[Compute SHA-256 Hash]:::process
+        R_Hash --> R_Verify{Verify Hash against Metadata}:::process
+    end
+
+    %% Network / Transfer Connections
+    R_PubKey -. "1. Exchange Public Key" .-> S_Encap:::transfer
+    
+    S_KemCT -. "2. Transfer" .-> R_Decap:::transfer
+    S_EncFile -. "Transfer" .-> R_Decrypt:::transfer
+    S_Meta -. "Transfer" .-> R_Verify:::transfer
+```
+
+### Detailed Cryptographic Sequence
+
+This sequence diagram breaks down the precise order of operations during a file transfer session.
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant S as Sender
     participant R as Receiver
 
-    Note over R: 1. Initialization
-    R->>R: Generate Kyber768 Key Pair
-    R->>S: Send Public Key
+    rect rgb(240, 245, 255)
+        Note over S,R: Phase 1: Initialization
+        R->>R: Generate Kyber768 Key Pair
+        R->>S: Transmit Public Key
+    end
 
-    Note over S: 2. File Preparation
-    S->>S: Read Plaintext File
-    S->>S: Compute SHA-256 Hash
+    rect rgb(255, 245, 240)
+        Note over S: Phase 2: Sender Encryption
+        S->>S: Compute SHA-256 Hash of Plaintext File
+        S->>S: Encapsulate KEM (Produces Shared Secret & Ciphertext)
+        S->>S: Derive AES-256 Key from Shared Secret
+        S->>S: Encrypt Plaintext using AES-256-GCM
+        S->>S: Bundle Metadata (Hash, Algorithm, Timestamps)
+    end
 
-    Note over S: 3. Key Encapsulation (KEM)
-    S->>S: Encapsulate Shared Secret using Public Key
-    S->>S: Derive AES-256 Key from Shared Secret
+    rect rgb(235, 255, 240)
+        Note over S,R: Phase 3: Secure Transfer
+        S->>R: Send [Encrypted File] + [KEM Ciphertext] + [Metadata JSON]
+    end
 
-    Note over S: 4. Encryption
-    S->>S: Encrypt File with AES-256-GCM
-    S->>S: Create Metadata (JSON)
-
-    Note over S,R: 5. Transfer Simulation
-    S->>R: Transfer [Encrypted File] + [KEM Ciphertext] + [Metadata JSON]
-
-    Note over R: 6. Decapsulation
-    R->>R: Decapsulate KEM Ciphertext using Secret Key
-    R->>R: Recover Shared Secret
-    R->>R: Derive AES-256 Key
-
-    Note over R: 7. Decryption & Verification
-    R->>R: Decrypt File with AES-256-GCM
-    R->>R: Compute SHA-256 Hash of Decrypted File
-    R->>R: Verify Hash matches Metadata
+    rect rgb(250, 240, 255)
+        Note over R: Phase 4: Receiver Decryption
+        R->>R: Decapsulate KEM Ciphertext using Secret Key
+        R->>R: Recover Shared Secret & Derive AES Key
+        R->>R: Decrypt Payload using AES-256-GCM
+        R->>R: Compute SHA-256 of Decrypted File
+        R->>R: Verify computed hash against received Metadata
+    end
 ```
 
 ### Module Responsibilities
