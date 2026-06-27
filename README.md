@@ -11,7 +11,7 @@
 [![AES-256-GCM](https://img.shields.io/badge/Encryption-AES--256--GCM-blueviolet.svg?style=flat)]()
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0)
 
-[Overview](#-overview) • [Installation](#%EF%B8%8F-installation) • [Quick Start](#-quick-start) • [Documentation](DOCS.md)
+[Overview](#-overview) • [Installation](#%EF%B8%8F-installation) • [Quick Start](#-quick-start) • [Documentation (EN)](docs/documentation_en.md) • [Dokumentasi (ID)](docs/documentation_id.md)
 </div>
 
 ---
@@ -27,7 +27,7 @@ Pangolin simulates a real-world two-party file transfer where sender and receive
 | **Integrity** | **SHA-256** | Pre/post transfer hash verification |
 | **Transfer** | **File copy (simulated)** | Mimics an out-of-band channel |
 
-*For full technical details — cryptographic parameters, architecture diagrams, module reference, benchmarking, and security analysis — see [**DOCS.md**](DOCS.md).*
+*For full technical details — cryptographic parameters, architecture diagrams, module reference, benchmarking, and security analysis — see [**documentation_en.md**](docs/documentation_en.md) · [**documentation_id.md**](docs/documentation_id.md).*
 
 ---
 
@@ -161,9 +161,11 @@ pangolin/
 ├── sender/
 │   ├── encrypt.py         # CLI: encrypt file for receiver
 │   └── core/              # cryptographic library (mirror)
+├── docs/
+│   ├── documentation_en.md  # 📖 Full technical documentation (English)
+│   └── documentation_id.md  # 📖 Dokumentasi teknis lengkap (Indonesia)
 ├── requirements.txt
-├── README.md              # You are here! 👋
-└── DOCS.md                # 📖 Full technical documentation
+└── README.md              # You are here! 👋
 ```
 
 ---
@@ -177,5 +179,5 @@ pangolin/
 ---
 
 <div align="center">
-  <i>Licensed under the GNU GPLv3. See <a href="DOCS.md#security-notes">DOCS.md § Security Notes</a> for important caveats before any production use.</i>
+  <i>Licensed under the GNU GPLv3. See <a href="docs/documentation_en.md#-security-notes">Security Notes</a> for important caveats before any production use.</i>
 </div>
