@@ -77,6 +77,11 @@ def measure(
 
     # Capture post-execution metrics
     cpu_percent = process.cpu_percent(interval=None)
+    
+    # Cap at 100% since operations are single-threaded and psutil 
+    # can produce anomalous spikes for sub-millisecond intervals.
+    cpu_percent = min(cpu_percent, 100.0)
+    
     ram_mb = process.memory_info().rss / (1024 * 1024)
 
     benchmark = BenchmarkResult(
