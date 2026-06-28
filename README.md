@@ -11,7 +11,7 @@
 [![AES-256-GCM](https://img.shields.io/badge/Encryption-AES--256--GCM-blueviolet.svg?style=flat)]()
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0)
 
-[Overview](#-overview) • [Installation](#%EF%B8%8F-installation) • [Quick Start](#-quick-start) • [Documentation (EN)](docs/documentation_en.md) • [Dokumentasi (ID)](docs/documentation_id.md)
+[Overview](#-overview) • [Installation](#%EF%B8%8F-installation) • [Quick Start](#-quick-start) • [Documentation (EN)](docs/documentation_en.md) • [Dokumentasi (ID)](docs/documentation_id.md) • [Experiment Results](experiment/EXPERIMENT.md)
 </div>
 
 ---
@@ -183,7 +183,7 @@ This repository accompanies the research entitled:
 **"Pangolin: A Hybrid CRYSTALS-Kyber768 and AES-256-GCM Scheme for Secure Digital File Transfer."**  
 *Isma'il Faruqy, Astrella Syadira Ramadhante, Muhammad Surya Wiranegara*
 
-The repository serves as the implementation artifact used throughout the experimental evaluation described in the paper.
+The repository serves as the implementation artifact used throughout the experimental evaluation described in the paper. See the [**Experimental Evaluation Report**](experiment/EXPERIMENT.md) for the full benchmark methodology and results.
 
 ---
 
