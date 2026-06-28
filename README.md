@@ -176,6 +176,15 @@ pangolin/
 
 </div>
 
+## 🎓 Academic Attribution
+
+This repository accompanies the research entitled:
+
+**"Pangolin: A Hybrid CRYSTALS-Kyber768 and AES-256-GCM Scheme for Secure Digital File Transfer."**  
+*Isma'il Faruqy, Astrella Syadira Ramadhante, Muhammad Surya Wiranegara*
+
+The repository serves as the implementation artifact used throughout the experimental evaluation described in the paper.
+
 ---
 
 <div align="center">
