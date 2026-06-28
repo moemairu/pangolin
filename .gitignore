@@ -12,6 +12,7 @@ venv.bak/
 
 # Project specific
 data/
+dataset/
 *.log
 
 # macOS
